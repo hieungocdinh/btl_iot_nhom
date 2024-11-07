@@ -1,0 +1,45 @@
+{% extends 'app/base.html' %} {% load static %} {% block title %} Home
+{%endblock title %} {% block style %}
+<link rel="stylesheet" href="{% static 'css/home.css' %}" />
+{% endblock style %} {% block content %}
+<div class="dashboard-container">
+  <header>
+    <h1>HỆ THỐNG IOT PHÂN LOẠI RÁC THẢI</h1>
+    <p>Hỗ trợ giám sát và quản lý rác thải</p>
+  </header>
+
+  <div class="user-toolbar">
+    <select id="trash-can-select">
+      {% for trash_can in trash_cans %}
+      <option value="{{trash_can.id}}">{{trash_can.position}}</option>
+      {% endfor %}
+    </select>
+    <a href="/logout" id="logout-button">Đăng xuất</a>
+  </div>
+
+  <section class="main-content">
+    <div class="chart-section">
+      <canvas id="chart-section-pie" width="600" height="400" ></canvas>
+    </div>
+
+    <div class="progress-section">
+      <!-- Progress Bars -->
+      <h2>Tình trạng rác hiện tại</h2>
+      <div id="progress-bar-group" class="progress-bar-group">
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery">
+    <div class="gallery-header">
+      <h2>Ảnh rác nhận diện</h2>
+      <select id="trash-compartment-select" onchange="filterTrash()">
+      </select>
+    </div>
+
+    <div id="trash-data-container" class="image-scroll">
+    </div>
+  </section>
+</div>
+<script src="{% static 'js/home.js' %}"></script>
+{% endblock %}

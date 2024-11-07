@@ -1,0 +1,101 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-box {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    height: 400px;
+    text-align: center;
+}
+
+.login-box h2 {
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 16px;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 16px 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.login-btn {
+    margin-top: 8px;
+    width: 100%;
+    height: 40px;
+    background-color: #4d88ff;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.login-btn:hover {
+    background-color: #3a6dce;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.login-btn:active {
+    background-color: #335bb3;
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: -300px;
+    /* Bắt đầu bên ngoài màn hình */
+    width: 250px;
+    padding: 15px;
+    background-color: #f8d7da;
+    /* Màu nền thông báo */
+    color: #721c24;
+    /* Màu chữ thông báo */
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* Đổ bóng cho thông báo */
+    transition: right 0.5s;
+    z-index: 9999;
+}
+
+.notification.show {
+    right: 20px;
+    /* Hiện ô thông báo vào trong màn hình */
+}
+
+.icon {
+    margin-right: 10px;
+    /* Khoảng cách giữa biểu tượng và nội dung thông báo */
+    font-size: 20px;
+    /* Kích thước biểu tượng */
+    vertical-align: middle;
+    /* Căn giữa biểu tượng với văn bản */
+}

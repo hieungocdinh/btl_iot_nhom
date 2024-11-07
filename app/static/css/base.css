@@ -1,0 +1,26 @@
+/* base.css */
+
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom right, #a1c4fd, #c2e9fb);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    width: 80%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 20px;
+}
