@@ -1,7 +1,6 @@
-Django>=4.2
+django
 djangorestframework
 cloudinary
-
 
 # ```bash
 # pip install -r requirements.txt
