@@ -1,9 +1,7 @@
-/* home.css */
+/* ---------- 1. BODY AND CONTAINER STYLING ---------- */
 
 body {
     background: #f0f4f8;
-    color: #333;
-    font-family: 'Arial', sans-serif;
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -19,6 +17,8 @@ body {
     padding: 30px;
 }
 
+/* ---------- 2. HEADER STYLING ---------- */
+
 header {
     text-align: center;
     margin-bottom: 30px;
@@ -26,7 +26,7 @@ header {
 
 header h1 {
     color: #4a90e2;
-    margin-bottom: 10px;
+    margin-bottom: 16px;
     font-size: 2em;
 }
 
@@ -34,6 +34,8 @@ header p {
     font-size: 1em;
     color: #666;
 }
+
+/* ---------- 3. USER TOOLBAR STYLING ---------- */
 
 .user-toolbar {
     display: flex;
@@ -52,11 +54,15 @@ header p {
     border: 1px solid #ddd;
 }
 
+/* ---------- 4. MAIN CONTENT STYLING ---------- */
+
 .main-content {
     height: 400px;
     display: flex;
     gap: 20px;
 }
+
+/* ---------- 5. CHART SECTION STYLING ---------- */
 
 .chart-section {
     display: flex;
@@ -68,7 +74,35 @@ header p {
     border-radius: 8px;
     text-align: center;
     color: #999;
+    position: relative;
 }
+
+/* ---------- 6. CHART BUTTONS STYLING ---------- */
+
+.chart-buttons {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.chart-button {
+    margin-bottom: 10px;
+    padding: 10px;
+    cursor: pointer;
+    background-color: rgba(204, 214, 233, 0.8);
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.chart-button:hover {
+    background-color: rgba(170, 190, 210, 0.8);
+}
+
+/* ---------- 7. PROGRESS SECTION STYLING ---------- */
 
 .progress-section {
     flex: 1;
@@ -97,13 +131,12 @@ header p {
     background: #e0e0e0;
     border-radius: 10px;
     overflow: hidden;
-    height: 15px;
+    height: 18px;
     margin-right: 10px;
     position: relative;
 }
 
 .progress-bar .bar .fill {
-    background: #4a90e2;
     height: 100%;
     border-radius: 10px;
     transition: width 0.3s;
@@ -116,15 +149,24 @@ header p {
     transform: translate(-50%, -50%);
 }
 
+/* ---------- 8. RESET BUTTON STYLING ---------- */
+
 .progress-bar .reset {
-    padding: 5px 10px;
+    padding: 8px 12px;
     font-size: 0.9em;
     border: none;
     border-radius: 5px;
     background-color: #4a90e2;
     color: white;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+
+.progress-bar .reset:hover {
+    background-color: #357ABD;
+}
+
+/* ---------- 9. IMAGE GALLERY STYLING ---------- */
 
 .gallery {
     margin-top: 30px;
@@ -153,6 +195,8 @@ header p {
     object-fit: cover;
 }
 
+/* ---------- 10. GALLERY HEADER STYLING ---------- */
+
 .gallery-header {
     display: flex;
     justify-content: space-between;
@@ -164,13 +208,7 @@ header p {
     margin: 0;
 }
 
-.gallery-header select {
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1em;
-}
-
+.gallery-header select,
 .gallery select {
     margin-bottom: 10px;
     padding: 8px;
@@ -179,6 +217,8 @@ header p {
     font-size: 1em;
 }
 
+/* ---------- 11. BUTTONS STYLING (LOGOUT, TRASH CATEGORY) ---------- */
+
 #logout-button {
     background-color: #f44336;
     color: white;
@@ -186,6 +226,11 @@ header p {
     text-decoration: none;
     border-radius: 5px;
     float: right;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#logout-button:hover {
+    background-color: #d32f2f;
 }
 
 #trash-category {

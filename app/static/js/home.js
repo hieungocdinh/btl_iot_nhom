@@ -1,5 +1,4 @@
-let myPieChart = null;
-
+let pieChart, barChart;
 
 document.addEventListener("DOMContentLoaded", function () {
     const selectElement = document.getElementById("trash-can-select");
@@ -39,7 +38,7 @@ function fetchTrashCanData() {
             data.trash_compartment.forEach(trashCompartment => {
                 const option = document.createElement("option");
                 option.value = trashCompartment.id;
-                option.textContent = trashCompartment.lable;
+                option.textContent = trashCompartment.label;
                 trashCompartmentSelect.appendChild(option);
             });
 
@@ -107,7 +106,7 @@ function fetchProgessSection(selectedTrashCanId) {
 
                 // Tạo nhãn cho thanh tiến độ (label)
                 const label = document.createElement("label");
-                label.textContent = `${compartment.label} :`;  // label từ TrashCompartment (Battery, Plastic, etc.)
+                label.textContent = `${compartment.label} :`;
 
                 // Tạo thanh bar
                 const bar = document.createElement("div");
@@ -116,7 +115,16 @@ function fetchProgessSection(selectedTrashCanId) {
                 // Tạo phần fill của thanh tiến độ
                 const fill = document.createElement("div");
                 fill.className = "fill";
-                fill.style.width = `${compartment.percentage}%`;  // Tỷ lệ phần trăm từ dữ liệu API
+                fill.style.width = `${compartment.percentage}%`;
+
+                // Thay đổi màu sắc của fill dựa trên giá trị percentage
+                if (compartment.percentage > 80) {
+                    fill.style.backgroundColor = "#FF6B6B";  // Màu đỏ cho > 90%
+                } else if (compartment.percentage > 60) {
+                    fill.style.backgroundColor = "#FFD93D";  // Màu vàng cho > 70%
+                } else {
+                    fill.style.backgroundColor = "#4CAF50";  // Màu xanh cho các giá trị còn lại
+                }
 
                 // Tạo phần text hiển thị giữa thanh tiến độ
                 const progressText = document.createElement("span");
@@ -172,48 +180,114 @@ function fetchChartSection(trashCanId) {
             const labels = data.labels;
             const chartData = data.data;
 
-            // Kiểm tra và hủy biểu đồ cũ nếu có
-            if (myPieChart) {
-                myPieChart.destroy();
+            // Xóa biểu đồ cũ trước khi tạo biểu đồ mới
+            if (pieChart) {
+                pieChart.destroy();
+            }
+            if (barChart) {
+                barChart.destroy();
             }
 
-            // Khởi tạo biểu đồ với dữ liệu nhận từ API
-            const ctx = document.getElementById("chart-section-pie");
-            myPieChart = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Số lượng rác',
-                        data: chartData,  // Dữ liệu số lượng rác
-                        backgroundColor: [
-                            '#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0',
-                            '#ffb3e6', '#b3e6ff', '#ffccff', '#c2f0c2', '#ffb366'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (tooltipItem) {
-                                    var total = tooltipItem.dataset.data.reduce((acc, val) => acc + val, 0);
-                                    var currentValue = tooltipItem.raw;
-                                    var percentage = Math.round((currentValue / total) * 100);
-                                    return tooltipItem.label + ': ' + currentValue + ' (' + percentage + '%)';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+            // Khởi tạo biểu đồ hình tròn và biểu đồ cột với dữ liệu nhận được
+            initializePieChart(labels, chartData);
+            initializeBarChart(labels, chartData);
+
+            // Mặc định hiển thị biểu đồ hình tròn
+            showChart('pie');
         })
         .catch(error => {
             console.error('Error fetching data:', error);
         });
+}
+
+function initializePieChart(labels, chartData) {
+    const ctxPie = document.getElementById("chart-section-pie");
+    pieChart = new Chart(ctxPie, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Số lượng rác',
+                data: chartData,
+                backgroundColor: [
+                    '#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0',
+                    '#ffb3e6', '#b3e6ff', '#ffccff', '#c2f0c2', '#ffb366'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            var total = tooltipItem.dataset.data.reduce((acc, val) => acc + val, 0);
+                            var currentValue = tooltipItem.raw;
+                            var percentage = Math.round((currentValue / total) * 100);
+                            return tooltipItem.label + ': ' + currentValue + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeBarChart(labels, chartData) {
+    const ctxBar = document.getElementById("chart-section-bar");
+
+    barChart = new Chart(ctxBar, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Số lượng rác',
+                data: chartData,
+                backgroundColor: [
+                    '#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0',
+                    '#ffb3e6', '#b3e6ff', '#ffccff', '#c2f0c2', '#ffb366'
+                ],
+                borderWidth: 0,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        fontColor: '#fff',
+                        boxWidth: 0
+                    }
+                }
+            }
+        }
+    });
+}
+
+
+function showChart(chartType) {
+    const pieCanvas = document.getElementById("chart-section-pie");
+    const barCanvas = document.getElementById("chart-section-bar");
+
+    if (chartType === 'pie') {
+        pieCanvas.style.display = 'block';
+        barCanvas.style.display = 'none';
+    } else {
+        pieCanvas.style.display = 'none';
+        barCanvas.style.display = 'block';
+    }
 }

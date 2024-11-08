@@ -6,9 +6,9 @@ import cloudinary.api
 from cloudinary.exceptions import Error
 
 from rest_framework.response import Response
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.contrib import messages
-from .models import Trash, TrashCompartment, TrashCan, Profile
+from .models import Trash, TrashCompartment, TrashCan
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -61,7 +61,7 @@ def uploadImage(request):
             # Lấy dữ liệu từ request.POST
             image = request.FILES['image']
             trash_can_id = request.POST.get('trash_can_id')
-            trash_compartment_lable = request.POST.get('trash_compartment_lable')
+            trash_compartment_label = request.POST.get('trash_compartment_label')
 
             # Kiểm tra nếu không có trash_can_id
             if not trash_can_id:
@@ -73,18 +73,18 @@ def uploadImage(request):
                 except TrashCan.DoesNotExist:
                     return JsonResponse({'status': 'error', 'message': 'TrashCan not found'}, status=404)
 
-            # Kiểm tra nếu không có trash_compartment_lable
-            if not trash_compartment_lable:
-                return JsonResponse({'status': 'error', 'message': 'trash_compartment_lable is required'}, status=400)
+            # Kiểm tra nếu không có trash_compartment_label
+            if not trash_compartment_label:
+                return JsonResponse({'status': 'error', 'message': 'trash_compartment_label is required'}, status=400)
             else:
-                # Lấy trash_compartment từ trash_can_id và trash_compartment_lable
+                # Lấy trash_compartment từ trash_can_id và trash_compartment_label
                 try:
-                    trash_compartment = TrashCompartment.objects.get(id_trash_can=trash_can, lable=trash_compartment_lable)
+                    trash_compartment = TrashCompartment.objects.get(id_trash_can=trash_can, label=trash_compartment_label)
                 except TrashCompartment.DoesNotExist:
                     return JsonResponse({'status': 'error', 'message': 'TrashCompartment not found'}, status=404)  
 
-            # Tạo ra public_id từ trash_can_id, trash_compartment_lable và timestamp
-            public_id_value = f"{trash_can_id}_{trash_compartment_lable}_{int(time.time())}"
+            # Tạo ra public_id từ trash_can_id, trash_compartment_label và timestamp
+            public_id_value = f"{trash_can_id}_{trash_compartment_label}_{int(time.time())}"
 
             # Upload ảnh lên Cloudinary
             try:
@@ -128,7 +128,7 @@ def getTrashData(request ,trash_can_id):
         'trash_compartment': [
             {
                 'id': compartment.id,
-                'lable': compartment.lable
+                'label': compartment.label
             } for compartment in trash_compartment
         ],
         'trash_data': [
@@ -136,7 +136,7 @@ def getTrashData(request ,trash_can_id):
                 'id': trash.id,
                 'id_trash_compartment': trash.id_trash_compartment.id,
                 'trash_img_url': trash.trash_img_url,
-                'lable': trash.id_trash_compartment.lable,
+                'label': trash.id_trash_compartment.label,
                 'date': trash.date.strftime('%d/%m/%Y %H:%M:%S'),
                 'quantity': trash.quantity
             } for trash in trash_data
@@ -171,7 +171,7 @@ def getTrashProgess(request, trash_can_id):
         # Thêm thông tin TrashCompartment vào dữ liệu trả về
         data['trash_compartments'].append({
             'id': compartment.id,
-            'label': compartment.lable,
+            'label': compartment.label,
             'max_quantity': compartment.max_quantity,
             'total_quantity': total_quantity,
             'percentage': round(percentage, 2),
@@ -228,7 +228,7 @@ def getTrashDataToChart(request, trash_can_id):
         total_trash = trash_data.aggregate(Sum('quantity'))['quantity__sum'] or 0  # Nếu không có rác thì lấy 0
 
         # Thêm tên ngăn rác và tổng số lượng vào dữ liệu trả về
-        labels.append(compartment.lable)
+        labels.append(compartment.label)
         data.append(total_trash)
 
     # Tính tổng số lượng rác không có TrashCompartment (id_trash_compartment = null)

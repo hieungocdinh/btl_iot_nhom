@@ -34,7 +34,8 @@
 
 .form-group input {
     width: 100%;
-    padding: 16px 8px;
+    padding: 12px;
+    font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 5px;
     box-sizing: border-box;

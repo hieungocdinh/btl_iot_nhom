@@ -1,4 +1,3 @@
-from django.contrib.auth.models import User
 from django.db import models
 
 class TrashCan(models.Model):
@@ -7,8 +6,11 @@ class TrashCan(models.Model):
 class TrashCompartment(models.Model):
     id_trash_can = models.ForeignKey(TrashCan, on_delete=models.CASCADE)
     empty_count = models.IntegerField(default=0)
-    lable = models.CharField(max_length=255)
+    label = models.CharField(max_length=255)
     max_quantity = models.IntegerField(default=20)
+
+    class Meta:
+        unique_together = ('id_trash_can', 'label')
 
 class Trash(models.Model):
     id_trash_can = models.ForeignKey(TrashCan, on_delete=models.CASCADE)
@@ -17,10 +19,3 @@ class Trash(models.Model):
     trash_img_public_id = models.CharField(max_length=255)  
     date = models.DateTimeField()
     quantity = models.IntegerField()  
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    full_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.full_name
