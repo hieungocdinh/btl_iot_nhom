@@ -1,5 +1,6 @@
 import time
 from datetime import datetime
+from django.utils import timezone
 from django.db.models import Sum
 import cloudinary.uploader
 import cloudinary.api
@@ -83,7 +84,6 @@ def uploadImage(request):
                 except TrashCompartment.DoesNotExist:
                     return JsonResponse({'status': 'error', 'message': 'TrashCompartment not found'}, status=404)  
                 
-            
             # Tạo ra public_id từ trash_area_id, trash_compartment_label và timestamp
             public_id_value = f"{trash_area_id}_{trash_compartment_label}_{int(time.time())}"
 
@@ -92,7 +92,7 @@ def uploadImage(request):
                 upload_result = cloudinary.uploader.upload(
                     image,
                     public_id = public_id_value,
-                    folder= "trash_images"  # Thư mục trên Cloudinary (tuỳ chọn)
+                    folder= "trash_images" 
                 )
                 
                 # Lấy URL và public_id từ phản hồi của Cloudinary
@@ -105,7 +105,7 @@ def uploadImage(request):
                     id_trash_compartment=trash_compartment,
                     trash_img_url=trash_img_url,
                     trash_img_public_id=trash_img_public_id,
-                    date=datetime.now(),
+                    date=timezone.now(),
                     quantity=1
                 )
                 trash.save()

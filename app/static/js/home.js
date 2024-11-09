@@ -142,21 +142,23 @@ function fetchProgessSection(selectedTrashAreaId) {
                 resetButton.className = "reset";
                 resetButton.textContent = "Đặt lại";
                 resetButton.addEventListener("click", function () {
-                    // Gửi yêu cầu đặt lại thông qua API
-                    fetch(`/api/reset-progress/${compartment.id}`)
-                        .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
-                        .then(data => {
-                            if (data.status === 'success') {
-                                // Nếu phản hồi là thành công, reload trang
-                                window.location.reload();
-                            } else {
-                                // Nếu có lỗi, bạn có thể hiển thị thông báo lỗi
-                                console.error('Error resetting progress:', data.message);
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Error resetting progress:", error);
-                        });
+                    if (compartment.total_quantity > 0) {
+                        // Gửi yêu cầu đặt lại thông qua API
+                        fetch(`/api/reset-progress/${compartment.id}`)
+                            .then(response => response.json())  // Chuyển đổi phản hồi thành JSON
+                            .then(data => {
+                                if (data.status === 'success') {
+                                    // Nếu phản hồi là thành công, reload trang
+                                    window.location.reload();
+                                } else {
+                                    // Nếu có lỗi, bạn có thể hiển thị thông báo lỗi
+                                    console.error('Error resetting progress:', data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error resetting progress:", error);
+                            });
+                    }
                 });
 
                 // Gắn nhãn, bar và nút vào thanh tiến độ
