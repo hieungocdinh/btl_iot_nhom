@@ -14,7 +14,7 @@
       {% if messages %} {% for message in messages %} {{ message }} {% endfor %}
       {% endif %}
     </div>
-    <form method="post" action="/login">
+    <form method="post" action="/api/login">
       {% csrf_token %}
       <div class="form-group">
         <label for="username">Tên người dùng</label>

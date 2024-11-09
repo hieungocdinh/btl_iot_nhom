@@ -9,12 +9,12 @@
   </header>
 
   <div class="user-toolbar">
-    <select id="trash-can-select">
-      {% for trash_can in trash_cans %}
-      <option value="{{trash_can.id}}">{{trash_can.position}}</option>
+    <select id="trash-area-select">
+      {% for trash_area in trash_areas %}
+      <option value="{{trash_area.id}}">{{trash_area.position}}</option>
       {% endfor %}
     </select>
-    <a href="/logout" id="logout-button">Đăng xuất</a>
+    <a href="/api/logout" id="logout-button">Đăng xuất</a>
   </div>
 
   <section class="main-content">

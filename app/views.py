@@ -8,7 +8,7 @@ from cloudinary.exceptions import Error
 from rest_framework.response import Response
 from django.http import JsonResponse
 from django.contrib import messages
-from .models import Trash, TrashCompartment, TrashCan
+from .models import Trash, TrashCompartment, TrashArea
 
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -36,14 +36,14 @@ def login(request):
 @login_required
 def logout(request):
     auth_logout(request)  
-    return redirect('login') 
+    return redirect('/api/login') 
 
 @login_required
 def home(request):
-    trash_cans = TrashCan.objects.all()
+    trash_areas = TrashArea.objects.all()
 
     context = {
-        'trash_cans': trash_cans
+        'trash_areas': trash_areas
     }
 
     return render(request, 'app/home.html', context)
@@ -60,31 +60,32 @@ def uploadImage(request):
             
             # Lấy dữ liệu từ request.POST
             image = request.FILES['image']
-            trash_can_id = request.POST.get('trash_can_id')
+            trash_area_id = request.POST.get('trash_area_id')
             trash_compartment_label = request.POST.get('trash_compartment_label')
 
-            # Kiểm tra nếu không có trash_can_id
-            if not trash_can_id:
-                return JsonResponse({'status': 'error', 'message': 'trash_can_id is required'}, status=400)
+            # Kiểm tra nếu không có trash_area_id
+            if not trash_area_id:
+                return JsonResponse({'status': 'error', 'message': 'trash_area_id is required'}, status=400)
             else:
-                # Lấy trash_can từ trash_can_id
+                # Lấy trash_area từ trash_area_id
                 try:
-                    trash_can = TrashCan.objects.get(id=trash_can_id)
-                except TrashCan.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'TrashCan not found'}, status=404)
+                    trash_area = TrashArea.objects.get(id=trash_area_id)
+                except TrashArea.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'TrashArea not found'}, status=404)
 
             # Kiểm tra nếu không có trash_compartment_label
             if not trash_compartment_label:
                 return JsonResponse({'status': 'error', 'message': 'trash_compartment_label is required'}, status=400)
             else:
-                # Lấy trash_compartment từ trash_can_id và trash_compartment_label
+                # Lấy trash_compartment từ trash_area_id và trash_compartment_label
                 try:
-                    trash_compartment = TrashCompartment.objects.get(id_trash_can=trash_can, label=trash_compartment_label)
+                    trash_compartment = TrashCompartment.objects.get(id_trash_area=trash_area, label=trash_compartment_label)
                 except TrashCompartment.DoesNotExist:
                     return JsonResponse({'status': 'error', 'message': 'TrashCompartment not found'}, status=404)  
-
-            # Tạo ra public_id từ trash_can_id, trash_compartment_label và timestamp
-            public_id_value = f"{trash_can_id}_{trash_compartment_label}_{int(time.time())}"
+                
+            
+            # Tạo ra public_id từ trash_area_id, trash_compartment_label và timestamp
+            public_id_value = f"{trash_area_id}_{trash_compartment_label}_{int(time.time())}"
 
             # Upload ảnh lên Cloudinary
             try:
@@ -100,7 +101,7 @@ def uploadImage(request):
 
                 # Tạo bản ghi mới trong mô hình Trash
                 trash = Trash(
-                    id_trash_can=trash_can,
+                    id_trash_area=trash_area,
                     id_trash_compartment=trash_compartment,
                     trash_img_url=trash_img_url,
                     trash_img_public_id=trash_img_public_id,
@@ -120,9 +121,9 @@ def uploadImage(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 @api_view(['GET'])
-def getTrashData(request ,trash_can_id):
-    trash_compartment = TrashCompartment.objects.filter(id_trash_can=trash_can_id).all()
-    trash_data = Trash.objects.filter(id_trash_can=trash_can_id).all().order_by('-date') 
+def getTrashData(request ,trash_area_id):
+    trash_compartment = TrashCompartment.objects.filter(id_trash_area=trash_area_id).all()
+    trash_data = Trash.objects.filter(id_trash_area=trash_area_id).all().order_by('-date') 
     
     data = {
         'trash_compartment': [
@@ -148,9 +149,9 @@ def getTrashData(request ,trash_can_id):
 
 
 @api_view(['GET'])
-def getTrashProgess(request, trash_can_id):
-    # Lấy tất cả TrashCompartment thuộc trash_can_id
-    trash_compartments = TrashCompartment.objects.filter(id_trash_can=trash_can_id)
+def getTrashProgess(request, trash_area_id):
+    # Lấy tất cả TrashCompartment thuộc trash_area_id
+    trash_compartments = TrashCompartment.objects.filter(id_trash_area=trash_area_id)
 
     # Khởi tạo danh sách dữ liệu trả về
     data = {
@@ -159,7 +160,6 @@ def getTrashProgess(request, trash_can_id):
 
     # Duyệt qua từng TrashCompartment để tính tổng quantity và phần trăm
     for compartment in trash_compartments:
-        # Tính tổng số lượng Trash trong mỗi TrashCompartment (bao gồm cả trường hợp id_trash_compartment là None)
         total_quantity = Trash.objects.filter(
             id_trash_compartment=compartment
         ).aggregate(Sum('quantity'))['quantity__sum'] or 0  # Sử dụng 0 nếu không có kết quả
@@ -200,7 +200,13 @@ def resetProgress(request, trash_compartment_id):
         except Error as e:
             return JsonResponse({'status': 'error', 'message': f'Failed to delete images from Cloudinary: {str(e)}'}, status=500)
 
-
+    # for public_id in public_ids_to_delete:
+    #     try:
+    #         cloudinary.api.delete_resources(public_id)
+    #     except Error as e:
+    #         print(f"Cloudinary error details: {str(e)}")  # Kiểm tra log để biết chi tiết lỗi
+    #         return JsonResponse({'status': 'error', 'message': f'Failed to delete images from Cloudinary: {str(e)}'}, status=500)
+        
     # Xóa tất cả Trash
     trash_data.delete()
 
@@ -211,9 +217,9 @@ def resetProgress(request, trash_compartment_id):
     return JsonResponse({'status': 'success', 'message': 'Trash data has been reset, images deleted from Cloudinary, and empty_count updated'}, status=200)
 
 @api_view(['GET'])
-def getTrashDataToChart(request, trash_can_id):
-    # Lấy tất cả các TrashCompartment thuộc TrashCan với trash_can_id
-    compartments = TrashCompartment.objects.filter(id_trash_can_id=trash_can_id)
+def getTrashDataToChart(request, trash_area_id):
+    # Lấy tất cả các TrashCompartment thuộc TrashArea với trash_area_id
+    compartments = TrashCompartment.objects.filter(id_trash_area_id=trash_area_id)
 
     # Lưu trữ dữ liệu trả về cho biểu đồ
     labels = []  # Danh sách tên các ngăn rác
@@ -232,7 +238,7 @@ def getTrashDataToChart(request, trash_can_id):
         data.append(total_trash)
 
     # Tính tổng số lượng rác không có TrashCompartment (id_trash_compartment = null)
-    other_trash_data = Trash.objects.filter(id_trash_compartment__isnull=True, id_trash_can_id=trash_can_id)
+    other_trash_data = Trash.objects.filter(id_trash_compartment__isnull=True, id_trash_area_id=trash_area_id)
     total_other_trash = other_trash_data.aggregate(Sum('quantity'))['quantity__sum'] or 0
 
     # Nếu có rác không thuộc bất kỳ TrashCompartment nào, thêm "Other" vào nhãn
@@ -245,3 +251,43 @@ def getTrashDataToChart(request, trash_can_id):
         'labels': labels,
         'data': data  
     })
+
+@api_view(['GET'])
+def getTrashAreaDataForEsp32(request, trash_area_id):
+    # Kiểm tra xem API key có hợp lệ không
+    api_key = request.headers.get('api_key')
+    if api_key != API_KEY:
+        return JsonResponse({'status': 'error', 'message': 'Invalid API key'}, status=403)
+
+    # Lấy tất cả TrashCompartment thuộc trash_area_id
+    trash_compartments = TrashCompartment.objects.filter(id_trash_area=trash_area_id)
+
+    # Khởi tạo danh sách dữ liệu trả về
+    data = {}
+
+    # Duyệt qua từng TrashCompartment để tính tổng quantity và phần trăm
+    for compartment in trash_compartments:
+        total_quantity = Trash.objects.filter(
+            id_trash_compartment=compartment
+        ).aggregate(Sum('quantity'))['quantity__sum'] or 0  
+        
+        max_quantity = compartment.max_quantity  
+        percentage = (total_quantity / max_quantity) * 100 if max_quantity > 0 else 0
+
+        if percentage > 80:
+            status = 'full'
+        elif percentage > 60:
+            status = 'warning'
+        else:
+            status = 'normal'
+
+        # Thêm thông tin TrashCompartment vào dữ liệu trả về
+        data[compartment.label] = {
+            'max_quantity': compartment.max_quantity,
+            'total_quantity': total_quantity,
+            'percentage': round(percentage, 2),
+            'status': status
+        }
+
+    return JsonResponse(data, safe=False)
+

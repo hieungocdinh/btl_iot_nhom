@@ -1,17 +1,17 @@
 let pieChart, barChart;
 
 document.addEventListener("DOMContentLoaded", function () {
-    const selectElement = document.getElementById("trash-can-select");
-    fetchTrashCanData();
-    selectElement.addEventListener("change", fetchTrashCanData);
+    const selectElement = document.getElementById("trash-area-select");
+    fetchTrashAreaData();
+    selectElement.addEventListener("change", fetchTrashAreaData);
 });
 
-function fetchTrashCanData() {
+function fetchTrashAreaData() {
     console.log("Fetching trash data...");
-    const selectElement = document.getElementById("trash-can-select");
-    const selectedTrashCanId = selectElement.value;
+    const selectElement = document.getElementById("trash-area-select");
+    const selectedTrashAreaId = selectElement.value;
 
-    fetch(`/api/trash-data/${selectedTrashCanId}`)
+    fetch(`/api/trash-data/${selectedTrashAreaId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -28,7 +28,7 @@ function fetchTrashCanData() {
             trashCompartmentSelect.innerHTML = "";
 
             // Cập nhật progess section
-            fetchProgessSection(selectedTrashCanId);
+            fetchProgessSection(selectedTrashAreaId);
 
             // Thêm các tùy chọn ngăn rác (trash compartments)
             const optionAll = document.createElement("option");
@@ -55,7 +55,7 @@ function fetchTrashCanData() {
                 trashDataContainer.appendChild(img);
             });
 
-            fetchChartSection(selectedTrashCanId);
+            fetchChartSection(selectedTrashAreaId);
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
@@ -84,10 +84,10 @@ function filterTrash() {
 }
 
 
-function fetchProgessSection(selectedTrashCanId) {
+function fetchProgessSection(selectedTrashAreaId) {
     const progessBarGroup = document.getElementById("progress-bar-group");
 
-    fetch(`/api/trash-can-progress/${selectedTrashCanId}`)
+    fetch(`/api/trash-area-progress/${selectedTrashAreaId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error("Network response was not ok");
@@ -173,8 +173,8 @@ function fetchProgessSection(selectedTrashCanId) {
         });
 }
 
-function fetchChartSection(trashCanId) {
-    fetch(`/api/get-trash-data-to-chart/${trashCanId}`)
+function fetchChartSection(trashAreaId) {
+    fetch(`/api/get-trash-data-to-chart/${trashAreaId}`)
         .then(response => response.json())
         .then(data => {
             const labels = data.labels;

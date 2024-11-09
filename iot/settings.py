@@ -135,7 +135,7 @@ MEDIA_URL = '/images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'app/static/images')
 
 # Đường dẫn khi người dùng chưa đăng nhập
-LOGIN_URL = '/login' 
+LOGIN_URL = '/api/login' 
 
 # config cloudinary
 CLOUDINARY_STORAGE = {
@@ -148,7 +148,8 @@ cloudinary.config(
     cloud_name=CLOUDINARY_STORAGE['CLOUD_NAME'],
     api_key=CLOUDINARY_STORAGE['API_KEY'],
     api_secret=CLOUDINARY_STORAGE['API_SECRET']
-    # api_proxy = "http://proxy.server:3128"
+    # api_proxy = "http://proxy.server:3128",
+    # secure=True
 )
 
 import cloudinary.uploader
